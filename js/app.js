@@ -170,24 +170,14 @@ function handleAns(e, qData) {
 
 // === SUMMARY MODE ===
 function renderSummary() {
-    // Simply fetching from our markdown file logic (which we converted to a basic HTML string for this embedded view)
     fetch('crash_guide_by_bahnasy.md')
-    .then(res => res.text())
-    .then(text => {
-        // Quick barebones markdown parser for display
-        let htmlDesc = text
-            .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-            .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-            .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-            .replace(/^\s*\*\*(.*?)\*\*/gim, '<b>$1</b>')
-            .replace(/^\s*\*(.*?)\*/gim, '<i>$1</i>')
-            .replace(/^\- (.*$)/gim, '<ul><li>$1</li></ul>')
-            .replace(/<\/ul>\n<ul>/gim, '')
-            .replace(/```python([\s\S]*?)```/gim, '<pre><code>$1</code></pre>')
-            .replace(/\n\n/gim, '<p></p>');
-            
-        appContent.innerHTML = `<div class="summary-container">${htmlDesc}</div>`;
-    }).catch(err => {
-        appContent.innerHTML = `<div class="summary-container"><h2>Error loading guide.</h2></div>`;
-    });
+        .then(res => res.text())
+        .then(text => {
+            // marked.parse() handles all the heavy lifting and edge cases
+            appContent.innerHTML = `<div class="summary-container">${marked.parse(text)}</div>`;
+        })
+        .catch(err => {
+            appContent.innerHTML = `<div class="summary-container"><h2>Error loading guide.</h2></div>`;
+        });
 }
+
